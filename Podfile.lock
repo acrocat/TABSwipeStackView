@@ -1,0 +1,12 @@
+PODS:
+  - RazzleDazzle (0.1.4)
+
+DEPENDENCIES:
+  - RazzleDazzle
+
+SPEC CHECKSUMS:
+  RazzleDazzle: 63a140fd0048de82ab95699008e99294c5492068
+
+PODFILE CHECKSUM: 5c79fb2d4bb41f1b73b0d31af116eadade867bf2
+
+COCOAPODS: 1.2.0.beta.1
