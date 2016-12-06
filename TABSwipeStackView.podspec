@@ -3,7 +3,7 @@ Pod::Spec.new do |s|
   # ―――  Spec Metadata  ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
 
   s.name         = "TABSwipeStackView"
-  s.version      = "0.0.1"
+  s.version      = "0.1.0"
   s.summary      = "A container for browsing a stack of subviews using the 'swipe left' and 'swipe right' gestures.'"
 
   # This description is used to generate tags and improve search results.
@@ -24,9 +24,9 @@ Pod::Spec.new do |s|
 
   s.platform     = :ios, "9.0"
 
-  s.source       = { :git => "https://github.com/acrocat/TABSwipeStackView", :tag => "#{s.version}" }
+  s.source       = { :git => "https://github.com/acrocat/TABSwipeStackView.git", :tag => "#{s.version}" }
 
-  s.source_files  = "TABSwipeStackView/**/*.{swift}"
+  s.source_files  = "TABSwipeStackView/*.{swift}" , "TABSwipeStackView/Views/*.{swift}","TABSwipeStackView/Animations/*.{swift}"
 
 
   # ――― Resources ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -50,7 +50,7 @@ Pod::Spec.new do |s|
   #
 
   s.framework = "UIKit"
-  s.dependency = "RazzleDazzle"
+  s.dependency 'RazzleDazzle', '~> 0.1.4'
 
 
   # ――― Project Settings ――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
