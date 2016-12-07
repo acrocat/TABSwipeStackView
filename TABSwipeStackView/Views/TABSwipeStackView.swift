@@ -10,6 +10,7 @@ import UIKit
 
 @objc public protocol TABSwipeStackViewDelegate
 {
+    @objc optional func swipeStackView (_ swipeStackView : TABSwipeStackView , pannedView view : UIView , atIndex index : Int , inDirection direction : TABSwipeStackViewSwipeDirection)
     @objc optional func swipeStackView (_ swipeStackView : TABSwipeStackView , dismissedView view : UIView , atIndex index : Int , inDirection direction : TABSwipeStackViewSwipeDirection)
     @objc func swipeStackView (_ swipeStackView : TABSwipeStackView , bufferViewForIndex index : Int) -> UIView?
 }
@@ -20,7 +21,7 @@ import UIKit
     case right = 1
 }
 
-public class TABSwipeStackView: UIView
+open class TABSwipeStackView: UIView
 {
     // ---------------------------------------------------------------------------
     // MARK: - Class Properties
@@ -75,7 +76,7 @@ public class TABSwipeStackView: UIView
     /**
      Init with coder
      */
-    required public init? (coder aDecoder: NSCoder)
+    public required init? (coder aDecoder: NSCoder)
     {
         super.init(coder: aDecoder)
         
@@ -115,6 +116,7 @@ public class TABSwipeStackView: UIView
     private func bufferViews ()
     {
         var iterator : Int = self.index + self.viewBuffer.count
+        print(self.delegate)
         
         while self.viewBuffer.count < TABSwipeStackView.BUFFER_SIZE
         {
@@ -134,7 +136,7 @@ public class TABSwipeStackView: UIView
     /**
      Takes the buffer of views and adds them to the superview, and sets their animation properties
      */
-    override public func layoutSubviews ()
+    open override func layoutSubviews ()
     {
         super.layoutSubviews()
         
@@ -294,9 +296,12 @@ public class TABSwipeStackView: UIView
     /**
      Pan
      */
-    @objc internal func pan (recognizer : UIPanGestureRecognizer)
+    @objc private func pan (recognizer : UIPanGestureRecognizer)
     {
         var translation = recognizer.translation(in: self).x * 0.75
+        
+        // Tell the delegate that the user is panning the view and the direction
+        self.delegate?.swipeStackView?(self, pannedView: self.getSurfaceView() ?? UIView(), atIndex: self.index, inDirection: (translation > 0) ? .right : .left)
         
         if translation > CGFloat(TABSwipeStackView.MAX_VIEW_DISPLACEMENT)
         {
