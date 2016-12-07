@@ -41,7 +41,7 @@ open class TABSwipeStackView: UIView
     
     private var dismissViewAnimation : TABDismissViewAnimation!
     private var scaleViewAnimation : TABScaleViewAnimation!
-    private var viewBuffer : Array<UIView> = []
+    public private(set) var viewBuffer : Array<UIView> = []
     
     // ---------------------------------------------------------------------------
     // MARK: - Getters and Setters
