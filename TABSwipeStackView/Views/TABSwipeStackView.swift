@@ -13,6 +13,8 @@ import UIKit
     @objc optional func swipeStackView (_ swipeStackView : TABSwipeStackView , pannedView view : UIView , atIndex index : Int , inDirection direction : TABSwipeStackViewSwipeDirection)
     @objc optional func swipeStackView (_ swipeStackView : TABSwipeStackView , cancelledPanningOnView view : UIView , atIndex index : Int , inDirection direction : TABSwipeStackViewSwipeDirection)
     @objc optional func swipeStackView (_ swipeStackView : TABSwipeStackView , dismissedView view : UIView , atIndex index : Int , inDirection direction : TABSwipeStackViewSwipeDirection)
+    @objc optional func reachedEndOfBufferInSwipeStackView (_ swipStackView : TABSwipeStackView)
+    
     @objc func swipeStackView (_ swipeStackView : TABSwipeStackView , bufferViewForIndex index : Int) -> UIView?
 }
 
@@ -117,7 +119,6 @@ open class TABSwipeStackView: UIView
     private func bufferViews ()
     {
         var iterator : Int = self.index + self.viewBuffer.count
-        print(self.delegate)
         
         while self.viewBuffer.count < TABSwipeStackView.BUFFER_SIZE
         {
@@ -220,6 +221,12 @@ open class TABSwipeStackView: UIView
             // Refill the buffer and display the views
             self.bufferViews()
             self.layoutSubviews()
+            
+            // If the view buffer is now empty, we need to tell the delegate that we're out of views
+            if self.viewBuffer.isEmpty
+            {
+                self.delegate?.reachedEndOfBufferInSwipeStackView?(self)
+            }
         }
     }
     
