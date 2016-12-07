@@ -11,6 +11,7 @@ import UIKit
 @objc public protocol TABSwipeStackViewDelegate
 {
     @objc optional func swipeStackView (_ swipeStackView : TABSwipeStackView , pannedView view : UIView , atIndex index : Int , inDirection direction : TABSwipeStackViewSwipeDirection)
+    @objc optional func swipeStackView (_ swipeStackView : TABSwipeStackView , cancelledPanningOnView view : UIView , atIndex index : Int , inDirection direction : TABSwipeStackViewSwipeDirection)
     @objc optional func swipeStackView (_ swipeStackView : TABSwipeStackView , dismissedView view : UIView , atIndex index : Int , inDirection direction : TABSwipeStackViewSwipeDirection)
     @objc func swipeStackView (_ swipeStackView : TABSwipeStackView , bufferViewForIndex index : Int) -> UIView?
 }
@@ -322,6 +323,10 @@ open class TABSwipeStackView: UIView
             else
             {
                 // They hadn't moved the view enough, move it back to its original position
+                
+                // Tell the delegate that the panning was cancelled
+                self.delegate?.swipeStackView?(self, cancelledPanningOnView: self.getSurfaceView() ?? UIView(), atIndex: self.index, inDirection: (translation > 0) ? .right : .left)
+                
                 UIView.animate(withDuration: 0.4, animations: {
                     self.dismissViewAnimation.animator.animate(0)
                     self.scaleViewAnimation.animator.animate(0)
