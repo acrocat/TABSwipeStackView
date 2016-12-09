@@ -212,7 +212,7 @@ open class TABSwipeStackView: UIView
     /**
      Move forwards through the stack
      */
-    public func cycleForwards ()
+    public func cycleForwards (direction : TABSwipeStackViewSwipeDirection)
     {
         if let view = self.getSurfaceView()
         {
@@ -226,7 +226,7 @@ open class TABSwipeStackView: UIView
             self.viewBuffer.remove(at: self.viewBuffer.count - 1)
             
             // Tell the delegate
-            self.delegate?.swipeStackView?(self, dismissedView: view, atIndex: self.index, inDirection: .right)
+            self.delegate?.swipeStackView?(self, dismissedView: view, atIndex: self.index, inDirection: direction)
             
             // Increment the index
             self.index += 1
@@ -293,7 +293,7 @@ open class TABSwipeStackView: UIView
                 self.scaleViewAnimation.animator.animate(maxDisplacement)
             })
         }, completion: {completed in
-            self.cycleForwards()
+            self.cycleForwards(direction: direction)
         })
     }
 
