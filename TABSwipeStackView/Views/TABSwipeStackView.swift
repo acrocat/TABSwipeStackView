@@ -8,14 +8,17 @@
 
 import UIKit
 
+@objc public protocol TABSwipeStackViewDataSource
+{
+    @objc func swipeStackView (_ swipeStackView : TABSwipeStackView , bufferViewForIndex index : Int) -> UIView?
+}
+
 @objc public protocol TABSwipeStackViewDelegate
 {
     @objc optional func swipeStackView (_ swipeStackView : TABSwipeStackView , pannedView view : UIView , atIndex index : Int , inDirection direction : TABSwipeStackViewSwipeDirection)
     @objc optional func swipeStackView (_ swipeStackView : TABSwipeStackView , cancelledPanningOnView view : UIView , atIndex index : Int , inDirection direction : TABSwipeStackViewSwipeDirection)
     @objc optional func swipeStackView (_ swipeStackView : TABSwipeStackView , dismissedView view : UIView , atIndex index : Int , inDirection direction : TABSwipeStackViewSwipeDirection)
     @objc optional func reachedEndOfBufferInSwipeStackView (_ swipStackView : TABSwipeStackView)
-    
-    @objc func swipeStackView (_ swipeStackView : TABSwipeStackView , bufferViewForIndex index : Int) -> UIView?
 }
 
 @objc public enum TABSwipeStackViewSwipeDirection : Int
@@ -39,6 +42,7 @@ open class TABSwipeStackView: UIView
     // ---------------------------------------------------------------------------
 
     private var _delegate : TABSwipeStackViewDelegate?
+    private var _dataSource : TABSwipeStackViewDataSource?
     public var index : Int = 0
     private let panGesture : UIPanGestureRecognizer = UIPanGestureRecognizer()
     
@@ -50,14 +54,23 @@ open class TABSwipeStackView: UIView
     // MARK: - Getters and Setters
     // ---------------------------------------------------------------------------
 
-    public var delegate : TABSwipeStackViewDelegate? {
+    open var delegate : TABSwipeStackViewDelegate? {
         get {
             return self._delegate
         }
         set {
             self._delegate = newValue
+        }
+    }
+    
+    open var dataSource : TABSwipeStackViewDataSource? {
+        get {
+            return self._dataSource
+        }
+        set {
+            self._dataSource = newValue
             
-            // Reload the data
+            // Reload data
             self.reloadData()
         }
     }
@@ -122,7 +135,7 @@ open class TABSwipeStackView: UIView
         
         while self.viewBuffer.count < TABSwipeStackView.BUFFER_SIZE
         {
-            if let view = self.delegate?.swipeStackView(self, bufferViewForIndex: iterator)
+            if let view = self.dataSource?.swipeStackView(self, bufferViewForIndex: iterator)
             {
                 self.viewBuffer.insert(view, at: 0)
             }
@@ -240,7 +253,7 @@ open class TABSwipeStackView: UIView
             self.index -= 1
             
             // Get the view from the delegate
-            if let view = self.delegate?.swipeStackView(self, bufferViewForIndex: self.index)
+            if let view = self.dataSource?.swipeStackView(self, bufferViewForIndex: self.index)
             {
                 // Get the hiddenview
                 self.getUpcomingView()?.removeFromSuperview()
