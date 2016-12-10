@@ -349,16 +349,20 @@ open class TABSwipeStackView: UIView
     // MARK: - Keyframe Animations
     // ---------------------------------------------------------------------------
     
+    /**
+     Set the animation keyframe for the surface view
+     */
     private func applyKeyframeToSurfaceView (_ keyframe : Int)
     {
-        print("Applying keyframe \(keyframe)")
-        
         if let surfaceView = self.getSurfaceView()
         {
             self.delegateAnimator?.swipeStackView?(self, transformationsForSurfaceView: surfaceView, atKeyframe: keyframe)
         }
     }
     
+    /**
+     Set the animation keyframe for the subsequent view
+     */
     private func applyKeyFrameToSubsequentView (_ keyframe : Int)
     {
         if let subsequentView = self.getSubsequentView()
