@@ -21,6 +21,12 @@ import UIKit
     @objc optional func reachedEndOfBufferInSwipeStackView (_ swipStackView : TABSwipeStackView)
 }
 
+@objc public protocol TABSwipeStackViewDelegateAnimator
+{
+    @objc optional func swipeStackView (_ swipeStackView : TABSwipeStackView , transformationsForSurfaceView view : UIView , atKeyframe keyframe : Int)
+    @objc optional func swipeStackView (_ swipeStackView : TABSwipeStackView , transformationForSubsequentView view : UIView , atKeyframe keyframe : Int)
+}
+
 @objc public enum TABSwipeStackViewSwipeDirection : Int
 {
     case left = 0
@@ -43,6 +49,8 @@ open class TABSwipeStackView: UIView
 
     private var _delegate : TABSwipeStackViewDelegate?
     private var _dataSource : TABSwipeStackViewDataSource?
+    private var _delegateAnimator : TABSwipeStackViewDelegateAnimator?
+    
     public var index : Int = 0
     private let panGesture : UIPanGestureRecognizer = UIPanGestureRecognizer()
     
@@ -55,24 +63,23 @@ open class TABSwipeStackView: UIView
     // ---------------------------------------------------------------------------
 
     open var delegate : TABSwipeStackViewDelegate? {
-        get {
-            return self._delegate
-        }
-        set {
-            self._delegate = newValue
-        }
+        get { return self._delegate }
+        set { self._delegate = newValue }
     }
     
     open var dataSource : TABSwipeStackViewDataSource? {
-        get {
-            return self._dataSource
-        }
+        get { return self._dataSource }
         set {
             self._dataSource = newValue
             
             // Reload data
             self.reloadData()
         }
+    }
+    
+    open var delegateAnimator : TABSwipeStackViewDelegateAnimator? {
+        get { return self._delegateAnimator }
+        set { self._delegateAnimator = newValue }
     }
     
     // ---------------------------------------------------------------------------
@@ -177,11 +184,11 @@ open class TABSwipeStackView: UIView
         // Attach the translate animation to the surface card
         if let surfaceView = self.getSurfaceView()
         {
-            self.dismissViewAnimation = TABDismissViewAnimation(withView: surfaceView)
+//            self.dismissViewAnimation = TABDismissViewAnimation(withView: surfaceView)
         }
         
         // Attach a scale animation to the hidden card
-        if let upcomingView = self.getUpcomingView()
+        if let upcomingView = self.getSubsequentView()
         {
             self.scaleViewAnimation = TABScaleViewAnimation(withView: upcomingView)
         }
@@ -204,7 +211,7 @@ open class TABSwipeStackView: UIView
     /**
      Get the card that appears behind the surface card
      */
-    public func getUpcomingView () -> UIView?
+    public func getSubsequentView () -> UIView?
     {
         return (self.viewBuffer.count > 1) ? self.viewBuffer[self.viewBuffer.count - 2] : nil
     }
@@ -217,7 +224,8 @@ open class TABSwipeStackView: UIView
         if let view = self.getSurfaceView()
         {
             // Reset the view that we just discarded
-            self.dismissViewAnimation.animator.animate(0)
+//            self.dismissViewAnimation.animator.animate(0)
+            self.applyKeyframeToSurfaceView(0)
             
             // Remove the view from the superview
             view.removeFromSuperview()
@@ -256,7 +264,7 @@ open class TABSwipeStackView: UIView
             if let view = self.dataSource?.swipeStackView(self, bufferViewForIndex: self.index)
             {
                 // Get the hiddenview
-                self.getUpcomingView()?.removeFromSuperview()
+                self.getSubsequentView()?.removeFromSuperview()
                 
                 // Insert the view into the start of the buffer
                 self.viewBuffer.remove(at: 0)
@@ -264,9 +272,11 @@ open class TABSwipeStackView: UIView
                 
                 self.layoutSubviews()
                 
-                self.dismissViewAnimation.animator.animate(150)
+//                self.dismissViewAnimation.animator.animate(150)
+                self.applyKeyframeToSurfaceView(150)
                 UIView.animate(withDuration: 0.3, animations: { 
-                    self.dismissViewAnimation.animator.animate(0)
+//                    self.dismissViewAnimation.animator.animate(0)
+                    self.applyKeyframeToSurfaceView(0)
                 })
             }
         }
@@ -284,12 +294,14 @@ open class TABSwipeStackView: UIView
         UIView.animateKeyframes(withDuration: 0.4, delay: 0.0, options: [.calculationModeCubic], animations: { () -> Void in
             //reset start point
             UIView.addKeyframe(withRelativeStartTime: 0.0, relativeDuration: 0.01, animations: { () -> Void in
-                self.dismissViewAnimation.animator.animate(resetDisplacement)
+//                self.dismissViewAnimation.animator.animate(resetDisplacement)
+                self.applyKeyframeToSurfaceView(Int(resetDisplacement))
                 self.scaleViewAnimation.animator.animate(resetDisplacement)
             })
             
             UIView.addKeyframe(withRelativeStartTime: 0.01, relativeDuration: 0.99, animations: { () -> Void in
-                self.dismissViewAnimation.animator.animate(maxDisplacement)
+//                self.dismissViewAnimation.animator.animate(maxDisplacement)
+                self.applyKeyframeToSurfaceView(Int(maxDisplacement))
                 self.scaleViewAnimation.animator.animate(maxDisplacement)
             })
         }, completion: {completed in
@@ -348,7 +360,8 @@ open class TABSwipeStackView: UIView
                 self.delegate?.swipeStackView?(self, cancelledPanningOnView: self.getSurfaceView() ?? UIView(), atIndex: self.index, inDirection: (translation > 0) ? .right : .left)
                 
                 UIView.animate(withDuration: 0.4, animations: {
-                    self.dismissViewAnimation.animator.animate(0)
+//                    self.dismissViewAnimation.animator.animate(0)
+                    self.applyKeyframeToSurfaceView(0)
                     self.scaleViewAnimation.animator.animate(0)
                 })
             }
@@ -356,8 +369,34 @@ open class TABSwipeStackView: UIView
         else
         {
             // Move the view with the user's finger
-            self.dismissViewAnimation.animator.animate(translation)
+//            self.dismissViewAnimation.animator.animate(translation)
+            let keyframe : Int = Int(translation)
+            
+            self.applyKeyframeToSurfaceView(keyframe)
             self.scaleViewAnimation.animator.animate(translation)
         }
     }
+    
+    // ---------------------------------------------------------------------------
+    // MARK: - Keyframe Animations
+    // ---------------------------------------------------------------------------
+    
+    private func applyKeyframeToSurfaceView (_ keyframe : Int)
+    {
+        if let surfaceView = self.getSurfaceView()
+        {
+            self.delegateAnimator?.swipeStackView?(self, transformationsForSurfaceView: surfaceView, atKeyframe: keyframe)
+        }
+    }
+    
+    private func applyKeyframeToSeubsequentView (_ keyframe : Int)
+    {
+        if let subsequentView = self.getSubsequentView()
+        {
+            self.delegateAnimator?.swipeStackView?(self, transformationForSubsequentView: subsequentView, atKeyframe: keyframe)
+        }
+    }
+    
+    // ---------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 }
