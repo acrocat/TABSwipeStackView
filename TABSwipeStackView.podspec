@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 	
   s.name         = "TABSwipeStackView"
-  s.version      = "0.1.1"
+  s.version      = "0.2.0"
   s.summary      = "A container for browsing a stack of views using the 'swipe left' and 'swipe right' gestures."
 
   s.homepage     = "https://github.com/acrocat/TABSwipeStackView"
