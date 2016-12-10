@@ -171,31 +171,6 @@ open class TABSwipeStackView: UIView
                 view.frame = self.bounds
             }
         }
-        
-        // Create animation for the surface card
-        self.setupAnimations()
-    }
-    
-    /**
-     A number of animations are used in this view. This method is used to set them up, and reconfigure when the view changes
-     */
-    private func setupAnimations ()
-    {
-        // Attach the translate animation to the surface card
-        if let surfaceView = self.getSurfaceView()
-        {
-//            self.dismissViewAnimation = TABDismissViewAnimation(withView: surfaceView)
-        }
-        
-        // Attach a scale animation to the hidden card
-        if let upcomingView = self.getSubsequentView()
-        {
-//            self.scaleViewAnimation = TABScaleViewAnimation(withView: upcomingView)
-        }
-        else
-        {
-//            self.scaleViewAnimation = TABScaleViewAnimation(withView: UIView())
-        }
     }
 
     /**
