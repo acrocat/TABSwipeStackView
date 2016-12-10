@@ -8,7 +8,7 @@
 
 import UIKit
 
-public class TABSwipeStackViewAnimation : NSObject , TABSwipeStackViewDelegateAnimator
+open class TABSwipeStackViewAnimation : NSObject , TABSwipeStackViewDelegateAnimator
 {
     // ---------------------------------------------------------------------------
     // MARK: - Class Properties
