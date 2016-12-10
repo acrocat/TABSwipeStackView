@@ -6,6 +6,4 @@ target 'TABSwipeStackView' do
   use_frameworks!
 
   # Pods for TABSwipeStackView
-  pod 'RazzleDazzle'
-
 end
