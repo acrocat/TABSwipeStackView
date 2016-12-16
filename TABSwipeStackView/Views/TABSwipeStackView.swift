@@ -228,7 +228,7 @@ open class TABSwipeStackView: UIView
     /**
      * Move backwards through the stack
      */
-    public func cycleBackwards ()
+    public func cycleBackwards (from direction: TABSwipeStackViewSwipeDirection)
     {
         if self.index > 0
         {
@@ -246,7 +246,7 @@ open class TABSwipeStackView: UIView
                 
                 self.layoutSubviews()
                 
-                self.applyKeyframeToSurfaceView(150)
+                self.applyKeyframeToSurfaceView((direction == .right) ? 150 : -150)
                 UIView.animate(withDuration: 0.3, animations: {
                     self.applyKeyframeToSurfaceView(0)
                 })
