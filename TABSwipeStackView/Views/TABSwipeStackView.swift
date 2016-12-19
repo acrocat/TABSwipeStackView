@@ -214,6 +214,17 @@ open class TABSwipeStackView: UIView
         })
     }
     
+    private func presentNewSurfaceView (direction : TABSwipeStackViewSwipeDirection , animated : Bool)
+    {
+        self.layoutSubviews()
+        
+        let displacement = Int(TABSwipeStackViewAnimation.TOTAL_KEYFRAMES)
+        self.applyKeyframeToSurfaceView((direction == .right) ? displacement : displacement * -1)
+        UIView.animate(withDuration: 0.4, animations: {
+            self.applyKeyframeToSurfaceView(0)
+        })
+    }
+    
     /**
      Move forwards through the stack
      */
@@ -267,13 +278,7 @@ open class TABSwipeStackView: UIView
                 self.viewBuffer.remove(at: 0)
                 self.viewBuffer.append(view)
                 
-                self.layoutSubviews()
-                
-                let displacement = Int(TABSwipeStackViewAnimation.TOTAL_KEYFRAMES)
-                self.applyKeyframeToSurfaceView((direction == .right) ? displacement : displacement * -1)
-                UIView.animate(withDuration: 0.3, animations: {
-                    self.applyKeyframeToSurfaceView(0)
-                })
+                self.presentNewSurfaceView(direction: direction, animated: true)
             }
         }
     }
