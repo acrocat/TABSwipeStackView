@@ -40,8 +40,6 @@ open class TABSwipeStackView: UIView
     // ---------------------------------------------------------------------------
     
     private static let BUFFER_SIZE : Int = 2
-    private static let MAX_VIEW_DISPLACEMENT : Int = 100
-    private static let DISMISSED_VIEW_DISPLACEMENT : Int = 150
     
     // ---------------------------------------------------------------------------
     // MARK: - Properties
@@ -246,7 +244,8 @@ open class TABSwipeStackView: UIView
                 
                 self.layoutSubviews()
                 
-                self.applyKeyframeToSurfaceView((direction == .right) ? 150 : -150)
+                let displacement = Int(TABSwipeStackViewAnimation.TOTAL_KEYFRAMES)
+                self.applyKeyframeToSurfaceView((direction == .right) ? displacement : displacement * -1)
                 UIView.animate(withDuration: 0.3, animations: {
                     self.applyKeyframeToSurfaceView(0)
                 })
@@ -259,8 +258,8 @@ open class TABSwipeStackView: UIView
      */
     private func dismissSurfaceView (direction : TABSwipeStackViewSwipeDirection , animated :  Bool)
     {
-        let resetDisplacement : CGFloat = (direction == .right) ? CGFloat(TABSwipeStackView.MAX_VIEW_DISPLACEMENT) : CGFloat(TABSwipeStackView.MAX_VIEW_DISPLACEMENT) * -1
-        let maxDisplacement : CGFloat = (direction == .right) ? CGFloat(TABSwipeStackView.DISMISSED_VIEW_DISPLACEMENT) : CGFloat(TABSwipeStackView.DISMISSED_VIEW_DISPLACEMENT) * -1
+        let resetDisplacement : CGFloat = (direction == .right) ? CGFloat(TABSwipeStackViewAnimation.TOTAL_INTERACTION_KEYFRAMES) : CGFloat(TABSwipeStackViewAnimation.TOTAL_INTERACTION_KEYFRAMES) * -1
+        let maxDisplacement : CGFloat = (direction == .right) ? CGFloat(TABSwipeStackViewAnimation.TOTAL_KEYFRAMES) : CGFloat(TABSwipeStackViewAnimation.TOTAL_KEYFRAMES) * -1
         
         // This entire block is a hack solution beacuse UIView is broken lawl
         UIView.animateKeyframes(withDuration: 0.4, delay: 0.0, options: [.calculationModeCubic], animations: { () -> Void in
@@ -306,19 +305,19 @@ open class TABSwipeStackView: UIView
         // Tell the delegate that the user is panning the view and the direction
         self.delegate?.swipeStackView?(self, pannedView: self.getSurfaceView() ?? UIView(), atIndex: self.index, inDirection: (translation > 0) ? .right : .left)
         
-        if translation > CGFloat(TABSwipeStackView.MAX_VIEW_DISPLACEMENT)
+        if translation > CGFloat(TABSwipeStackViewAnimation.TOTAL_INTERACTION_KEYFRAMES)
         {
-            translation = CGFloat(TABSwipeStackView.MAX_VIEW_DISPLACEMENT)
+            translation = CGFloat(TABSwipeStackViewAnimation.TOTAL_INTERACTION_KEYFRAMES)
         }
-        else if translation < (CGFloat(TABSwipeStackView.MAX_VIEW_DISPLACEMENT) * -1)
+        else if translation < (CGFloat(TABSwipeStackViewAnimation.TOTAL_INTERACTION_KEYFRAMES) * -1)
         {
-            translation = (CGFloat(TABSwipeStackView.MAX_VIEW_DISPLACEMENT) * -1)
+            translation = (CGFloat(TABSwipeStackViewAnimation.TOTAL_INTERACTION_KEYFRAMES) * -1)
         }
         
         if recognizer.state == .ended
         {
             // The user has stoped paning. If the view is at its max dispalcement, we will dismiss it
-            if abs(translation) == CGFloat(TABSwipeStackView.MAX_VIEW_DISPLACEMENT)
+            if abs(translation) == CGFloat(TABSwipeStackViewAnimation.TOTAL_INTERACTION_KEYFRAMES)
             {
                 self.dismissSurfaceView(direction: (translation > 0) ? .right : .left , animated: true)
             }

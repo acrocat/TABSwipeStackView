@@ -15,6 +15,7 @@ open class TABSwipeStackViewAnimation : NSObject , TABSwipeStackViewDelegateAnim
     // ---------------------------------------------------------------------------
     
     public static let TOTAL_KEYFRAMES : CGFloat = 150
+    public static let TOTAL_INTERACTION_KEYFRAMES : CGFloat = 150
     
     // ---------------------------------------------------------------------------
     // MARK: - Surface Card Properties
