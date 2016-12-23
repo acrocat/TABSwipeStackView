@@ -271,11 +271,14 @@ open class TABSwipeStackView: UIView
             // Get the view from the delegate
             if let view = self.dataSource?.swipeStackView(self, bufferViewForIndex: self.index)
             {
-                // Get the hiddenview
-                self.getSubsequentView()?.removeFromSuperview()
+                // If there is a subsequent view (this view is not the last), remove it
+                if let subsequentView = self.getSubsequentView()
+                {
+                    subsequentView.removeFromSuperview()
+                    self.viewBuffer.remove(at: 0)
+                }
                 
                 // Insert the view into the start of the buffer
-                self.viewBuffer.remove(at: 0)
                 self.viewBuffer.append(view)
                 
                 self.presentNewSurfaceView(direction: direction, animated: true)
